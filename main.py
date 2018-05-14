@@ -7,8 +7,9 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time
 import datetime
 import csv
+from captcha_hack import if_dos,dos_actions,too_many_windows
 #Seeting the geckodriver path
-os.environ["PATH"]="/Users/andriylevitskyy/Desktop/helping_heather/"
+os.environ["PATH"]="/Users/heather/Documents/Scraping/Gecko driver/"
 
 # path to the firefox binary inside the Tor package
 #binary = '/Applications/TorBrowser.app/Contents/MacOS/firefox'
@@ -113,37 +114,63 @@ browser.get(url)
 #    elem.click()
 #    time.sleep(5)
 titles=[]
-time.sleep(40)
+counter=0
+counter2=0
+time.sleep(60)
 while True:
     #finds al the images on the main_page
-    images=browser.find_elements_by_class_name('oImage')
+    while True:
+        try:    
+            images=browser.find_elements_by_class_name('oImage')
+            break
+        except:
+            browser.refresh()
+            time.sleep(5)
+            continue
     #need to return to main_page after the page is closing
     main_window = browser.current_window_handle
     for image in images:
-        individual_item=[]
-        image.click()
-        time.sleep(2)
-        #Referes to "VIEW OFFER button"
-        view_offer=browser.find_element_by_id('openProduct')
+        
         #Emulates keybord, presses shift to open a new window
-        ActionChains(browser) \
-        .key_down(Keys.SHIFT) \
-        .click(view_offer) \
-        .key_up(Keys.SHIFT) \
-        .perform()
-        time.sleep(3)
+        while True:
+            try:
+                counter+=1
+                print(counter)
+                image.click()
+                time.sleep(2)
+        #Referes to "VIEW OFFER button"
+                view_offer=browser.find_element_by_id('openProduct')
+                ActionChains(browser) \
+                .key_down(Keys.SHIFT) \
+                .click(view_offer) \
+                .key_up(Keys.SHIFT) \
+                .perform()
+                time.sleep(3)
         #Shift to the new window with specific product info
-        windows = browser.window_handles
-        browser.switch_to.window(windows[1])
-        time.sleep(0.5)
-        #Get all the information into list called INDIVIDUAL_ITEM
-        individual_item.append(get_title(browser))
-        individual_item=individual_item+get_basic_info(browser)
-        individual_item.append(get_product_description(browser))
-        individual_item.append(get_terms_and_conditions(browser))
-        individual_item=get_shipping_options_and_currencies(browser,individual_item)
-        individual_item.append(get_product_ratings(browser))
-        individual_item.append(str(datetime.datetime.now()))
+                windows = browser.window_handles
+                browser.switch_to.window(windows[1])
+                time.sleep(0.5)
+            #Get all the information into list called INDIVIDUAL_ITEM
+                individual_item=[]
+                individual_item.append(get_title(browser))
+                individual_item=individual_item+get_basic_info(browser)
+                individual_item.append(get_product_description(browser))
+                individual_item.append(get_terms_and_conditions(browser))
+                individual_item=get_shipping_options_and_currencies(browser,individual_item)
+                individual_item.append(get_product_ratings(browser))
+                individual_item.append(str(datetime.datetime.now()))
+                break
+            except:
+                time.sleep(5)
+                if if_dos(browser):
+                    dos_actions(browser)
+                    browser.switch_to_window(main_window)
+                    time.sleep(0.5)
+                    continue
+                else:
+                    browser.switch_to_window(main_window)
+                    time.sleep(0.5)
+                    continue
         #APPEND INDIVIDUAL_ITEM to the csv file
         with open("output.csv", "a",encoding="utf-8") as fp:
             wr = csv.writer(fp, dialect='excel')
@@ -153,13 +180,27 @@ while True:
         time.sleep(0.5)
         browser.switch_to_window(main_window)
     time.sleep(3)
+    current_url=browser.current_url
+    too_many_windows(browser,main_window)
     try:
         #when there is end of the page switch to the new page
-        elem=browser.find_element_by_class_name('lastPager')   
+        elem=browser.find_element_by_class_name('lastPager')  
         elem.click()
         time.sleep(5)
+        counter2+=1
+        print(counter2)
     except:
+        time.sleep(5)
+        if if_dos(browser):
+            dos_actions(browser)
+            browser.get(current_url)
+            elem=browser.find_element_by_class_name('lastPager')  
+            elem.click()
+            time.sleep(5)
+            counter2+=1
+            print(counter2)
         # if no new pages finish
-        print("Scraping ended succesfully!")
-        break
+        else:
+            print("Scraping ended succesfully!")
+            break
         
