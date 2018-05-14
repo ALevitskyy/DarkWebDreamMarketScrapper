@@ -7,7 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time
 import datetime
 import csv
-from test_dos import if_dos,dos_actions,too_many_windows
+from captcha_hack import if_dos,dos_actions,too_many_windows
 #Seeting the geckodriver path
 os.environ["PATH"]="/Users/heather/Documents/Scraping/Gecko driver/"
 
