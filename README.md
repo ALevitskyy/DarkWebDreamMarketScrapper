@@ -1,5 +1,5 @@
 # DarkWebDreamMarketScrapper
-Helping my friend to scrape information on drugs sold on DarkWeb by integrating selenium, Tor, openCV, tesseract and Python to crawl darkweb and overcome CAPTCHA check which activates every 100th click.  
+Helping my friend to scrape information on drugs sold on DarkWeb for her economic research project on effects of legalization on illegal markets. I used selenium, Tor, openCV, tesseract and Python to crawl darkweb and overcome CAPTCHA check which activates every 100th click.  
   
 **test_OCR.py** - basically keeps refreshing main page and prints the captcha text as recognized by OCR. It usually guesses correctly 1 in 8 attempts. When it fails to produce anything meaningful, "fail" is returned    
   
